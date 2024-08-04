@@ -10,14 +10,17 @@ connection.row_factory = dict_factory
 
 @app.get('/')
 async def root():
+    ''' root route '''
     return {'message': 'server running'}
 
 @app.get('/posts')
 async def posts():
+    ''' get all posts '''
     return get_posts(connection)
 
 @app.post('/posts')
 async def posts(post:Post) -> Post:
+    ''' add a post '''
     insert_post(connection, post)
     return post
 
