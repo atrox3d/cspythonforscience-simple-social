@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from sqlite3 import Connection, Row
 
 from database import get_posts, dict_factory, insert_post
@@ -8,10 +10,17 @@ app = FastAPI()
 connection = Connection('social.db')
 connection.row_factory = dict_factory
 
+templates = Jinja2Templates(directory='templates')
+
+
 @app.get('/')
-async def root():
-    ''' root route '''
-    return {'message': 'server running'}
+async def home(request: Request) -> HTMLResponse:
+    ''' home page '''
+    return templates.TemplateResponse(
+        request=request,
+        name='index.html',
+        context={}
+    )
 
 @app.get('/posts')
 async def posts():
