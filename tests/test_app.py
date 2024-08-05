@@ -44,6 +44,7 @@ def create_posts_table_sql() -> str:
 
 @pytest.fixture
 def app_connection(connection: Connection) -> Generator[Connection, None, None]:
+    global app_conn
     app_conn = connection
     yield app_conn
 
