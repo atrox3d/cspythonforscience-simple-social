@@ -7,8 +7,8 @@ from fastapi.testclient import TestClient
 from pathlib import Path
 
 from models import Post, Posts
-from app import app, connection as app_conn
-
+# from app import app, connection as app_conn
+import app
 
 @pytest.fixture
 def db_path() -> str:
@@ -44,9 +44,9 @@ def create_posts_table_sql() -> str:
 
 @pytest.fixture
 def app_connection(connection: Connection) -> Generator[Connection, None, None]:
-    global app_conn
-    app_conn = connection
-    yield app_conn
+    # global app_conn
+    app.connection = connection
+    yield app.connection
 
 @pytest.fixture
 def test_post() -> Post:
@@ -58,7 +58,7 @@ def test_post() -> Post:
 
 @pytest.fixture
 def client():
-    return TestClient(app)
+    return TestClient(app.app)
 
 def test_static_home(client):
     response = client.get('/')
