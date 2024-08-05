@@ -7,5 +7,13 @@
 </head>
 <body>
     <h1>simple social</h1>
+    {% for post in posts %}
+        <h3>
+            {{ post.post_title }}
+        </h3>
+        <p>
+            {{ post.post_text }}
+        </p>
+    {% endfor %}
 </body>
 </html>

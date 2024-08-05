@@ -16,10 +16,19 @@ templates = Jinja2Templates(directory='templates')
 @app.get('/')
 async def home(request: Request) -> HTMLResponse:
     ''' home page '''
+
+    context = {
+        'posts': [
+            {
+                'post_title': 'title',
+                'post_text': 'text' 
+            }
+        ]
+    }
     return templates.TemplateResponse(
         request=request,
         name='index.html',
-        context={}
+        context=context
     )
 
 @app.get('/posts')
