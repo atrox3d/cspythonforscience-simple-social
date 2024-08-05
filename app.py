@@ -17,14 +17,7 @@ templates = Jinja2Templates(directory='templates')
 async def home(request: Request) -> HTMLResponse:
     ''' home page '''
 
-    context = {
-        'posts': [
-            {
-                'post_title': 'title',
-                'post_text': 'text' 
-            }
-        ]
-    }
+    context = get_posts(connection).model_dump()
     return templates.TemplateResponse(
         request=request,
         name='index.html',
