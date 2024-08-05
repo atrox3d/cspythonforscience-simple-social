@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 from pathlib import Path
 
+from database import get_posts, insert_post
 from models import Post, Posts
 # from app import app, connection as app_conn
 import app
@@ -28,14 +29,14 @@ def connection(db_path:str) -> Generator[Connection, None, None]:
     conn.close()
 
 @pytest.fixture
-def empty_db_connection(connection: Connection,  table_name:str,  create_posts_table_sql:str) -> Generator[sqlite3.Connection, None, None]:
-    with connection:
-        with closing(connection.cursor()) as cur:
+def empty_db_connection(app_connection: Connection,  table_name:str,  create_posts_table_sql:str) -> Generator[sqlite3.Connection, None, None]:
+    with app_connection:
+        with closing(app_connection.cursor()) as cur:
             print(f'EMPTY_DB_CONNECTION | dropping {table_name=}')
             cur.execute('DROP TABLE IF EXISTS posts')
             print(f'EMPTY_DB_CONNECTION | creating {table_name=}')
             cur.execute(create_posts_table_sql)
-    yield connection
+    yield app_connection
 
 @pytest.fixture
 def create_posts_table_sql() -> str:
@@ -51,8 +52,8 @@ def app_connection(connection: Connection) -> Generator[Connection, None, None]:
 @pytest.fixture
 def test_post() -> Post:
     return Post(
-        post_title='tensting post title',
-        post_text='tensting post text',
+        post_title='tenting post title',
+        post_text='testing post text',
         user_id=0
     )
 
@@ -78,3 +79,15 @@ def test_app_connection(app_connection: Connection, db_path: str):
             break
     print(f'TEST_APP_CONNECTION | {path=}')
     assert Path(path).name == db_path
+
+def test_no_posts(empty_db_connection: Connection):
+    posts = get_posts(empty_db_connection)
+    print(posts)
+    assert posts == Posts(posts=[])
+
+def test_one_post(empty_db_connection:Connection, test_post:Post):
+    insert_post(empty_db_connection, test_post)
+    posts = get_posts(empty_db_connection)
+    print(posts)
+    assert posts == Posts(posts=[test_post])
+
